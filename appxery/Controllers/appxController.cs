@@ -35,7 +35,7 @@ namespace Appxery.Controllers
             Response.AddHeader("Content-Disposition", string.Format("attachment; filename=\"{0}.appx\"", app.Name));
             Response.WriteFile(app.FullPath);
             Response.Flush();
-            return null;
+            return new EmptyResult();
         }
 
         //

@@ -1,4 +1,21 @@
-﻿.control-value {
+﻿body
+{
+    font-family: 'Titillium Web', sans-serif;
+}
+
+#page-header h1
+{
+    font-weight: 300;
+}
+
+.control-value
+{
     padding-top: 5px;
     display: inline-block;
+}
+
+#page-footer
+{
+    font-size: 11px;
+    line-height: 15px;
 }
