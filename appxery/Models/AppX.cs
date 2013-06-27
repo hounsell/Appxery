@@ -52,10 +52,10 @@ namespace Appxery.Models
 
             string importPath = HttpContext.Current.Server.MapPath("~/App_Data/AppX-Import");
             string storePath = HttpContext.Current.Server.MapPath("~/App_Data/AppX-Store");
-            
-            DirectoryInfo di = new DirectoryInfo(importPath);
 
-            FileInfo[] appxs = di.GetFiles("*.appx");
+            DirectoryInfo importDir = new DirectoryInfo(importPath);
+
+            FileInfo[] appxs = importDir.GetFiles("*.appx");
 
             foreach (FileInfo appx in appxs)
             {
@@ -91,7 +91,6 @@ namespace Appxery.Models
                     OSMaxVersionTested = Version.Parse(appxManifestXml.Root.LocalElement("Prerequisites").LocalElement("OSMaxVersionTested").Value)
                 };
 
-                appxManifestStr.Flush();
                 appxManifestStr.Close();
 
                 File.Delete(xmlPath);
@@ -99,18 +98,20 @@ namespace Appxery.Models
                 // Import and Store details
                 DirectoryInfo storeDir = Directory.CreateDirectory(Path.Combine(storePath, item.AppxId.ToString()));
                 File.Move(appx.FullName, Path.Combine(storeDir.FullName, appx.Name));
+
                 item.FullPath = Path.Combine(storeDir.FullName, appx.Name);
-                BinaryFormatter bf = new BinaryFormatter();
                 FileStream fStr = new FileStream(Path.Combine(storeDir.FullName, "data.bin"), FileMode.CreateNew);
+
+                BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(fStr, item);
+
                 fStr.Flush();
                 fStr.Close();
             }
 
             foreach (DirectoryInfo storedAppx in new DirectoryInfo(storePath).GetDirectories())
             {
-                FileInfo[] storeBins = storedAppx.GetFiles("data.bin");
-                FileInfo storeBin = storeBins.First();
+                FileInfo storeBin = new FileInfo(Path.Combine(storedAppx.FullName, "data.bin"));
 
                 FileStream storeBinStr = storeBin.OpenRead();
                 BinaryFormatter bf = new BinaryFormatter();
@@ -121,7 +122,6 @@ namespace Appxery.Models
                     AppXList.Add(item);
                 }
 
-                storeBinStr.Flush();
                 storeBinStr.Close();
             }
         }
