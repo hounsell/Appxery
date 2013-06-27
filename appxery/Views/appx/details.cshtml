@@ -1,0 +1,77 @@
+﻿@model Appxery.Models.AppX
+
+@{
+    ViewBag.Title = string.Format("{0} (v{1}, {2}) - Appxery", Model.Name, Model.Version.ToString(), Model.ProcessorArchitecture.ToString());
+}
+
+<h2>@string.Format("{0} (v{1}, {2})", Model.Name, Model.Version.ToString(), Model.ProcessorArchitecture.ToString())</h2>
+
+<fieldset>
+    <legend>Details</legend>
+    <div class="form-horizontal">
+        <div class="control-group">
+            <div class="control-label">
+                Name
+            </div>
+            <div class="controls">
+                <div class="control-value">
+                    @Html.DisplayFor(model => model.Name)
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                Size
+            </div>
+            <div class="controls">
+                <div class="control-value">
+                    @Html.DisplayFor(model => model.Size) bytes
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                Publisher ID
+            </div>
+            <div class="controls">
+                <div class="control-value">
+                    @Html.DisplayFor(model => model.Publisher)
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                Display Name
+            </div>
+            <div class="controls">
+                <div class="control-value">
+                    @Html.DisplayFor(model => model.DisplayName)
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                Publisher Display Name
+            </div>
+            <div class="controls">
+                <div class="control-value">
+                    @Html.DisplayFor(model => model.PublisherDisplayName)
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                Description
+            </div>
+            <div class="controls">
+                <div class="control-value">
+                    @Html.DisplayFor(model => model.Description)
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+<p>
+    <a href="@Url.Action("download", new { id = Model.AppxId })" class="btn btn-primary"><i class="icon-download-alt"></i> Download</a>
+    <a href="@Url.Action("Index")" class="btn"><i class="icon-align-justify"></i> Back to Listing</a>
+</p>

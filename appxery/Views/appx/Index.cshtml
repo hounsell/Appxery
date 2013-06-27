@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Appxery.Models.AppX>
+
+@{
+    ViewBag.Title = "Appxery - Pre-release AppX Repository";
+}
+
+<h2>AppX Listing</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Version
+        </th>
+        <th>
+            Architecture
+        </th>
+        <th>
+            Publisher
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @item.Version.ToString()
+        </td>
+        <td>
+            @item.ProcessorArchitecture.ToString()
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PublisherDisplayName)
+        </td>
+        <td>
+            <a href="@Url.Action("details", new { id=item.AppxId })" class="btn btn-small"><i class="icon-th-list"></i> Details</a>
+            <a href="@Url.Action("download", new { id=item.AppxId })" class="btn btn-small"><i class="icon-download-alt"></i> Download</a>
+        </td>
+    </tr>
+}
+
+</table>

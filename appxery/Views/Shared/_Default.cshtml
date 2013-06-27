@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/r/s/a.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <h1>Appxery</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                @RenderBody()
+            </div>
+        </div>
+        <div class="row">
+            <div class="span4 offset8 text-right">
+                <p>Appxery developed by <a href="http://thounsell.co.uk/" target="_blank">Thomas Hounsell</a>.</p>
+                <p>Thanks to <a href="http://bscorp24.blogspot.co.uk/" target="_blank" rel="nofollow">Ahmed Jebara</a> for providing AppX packages.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
