@@ -72,41 +72,51 @@ namespace Appxery.Models
                 FileStream appxManifestStr = new FileStream(xmlPath, FileMode.Open);
                 XDocument appxManifestXml = XDocument.Load(appxManifestStr);
 
-                AppX item = new AppX()
+                try
                 {
-                    AppxId = Guid.NewGuid(),
+                    AppX item = new AppX()
+                    {
+                        AppxId = Guid.NewGuid(),
 
-                    Size = appx.Length,
+                        Size = appx.Length,
 
-                    Name = appxManifestXml.Root.LocalElement("Identity").Attribute("Name").Value,
-                    Version = Version.Parse(appxManifestXml.Root.LocalElement("Identity").Attribute("Version").Value),
-                    Publisher = appxManifestXml.Root.LocalElement("Identity").Attribute("Publisher").Value,
-                    ProcessorArchitecture = (Architecture)Enum.Parse(typeof(Architecture), appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture").Value),
+                        Name = appxManifestXml.Root.LocalElement("Identity").Attribute("Name").Value,
+                        Version = Version.Parse(appxManifestXml.Root.LocalElement("Identity").Attribute("Version").Value),
+                        Publisher = appxManifestXml.Root.LocalElement("Identity").Attribute("Publisher").Value,
+                        ProcessorArchitecture = (Architecture)Enum.Parse(typeof(Architecture), appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture") == null ? "neutral" : appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture").Value ),
 
-                    DisplayName = appxManifestXml.Root.LocalElement("Properties").LocalElement("DisplayName").Value,
-                    Description = appxManifestXml.Root.LocalElement("Properties").LocalElement("Description") != null ? appxManifestXml.Root.LocalElement("Properties").LocalElement("Description").Value : "",
-                    PublisherDisplayName = appxManifestXml.Root.LocalElement("Properties").LocalElement("PublisherDisplayName").Value,
+                        DisplayName = appxManifestXml.Root.LocalElement("Properties").LocalElement("DisplayName").Value,
+                        Description = appxManifestXml.Root.LocalElement("Properties").LocalElement("Description") != null ? appxManifestXml.Root.LocalElement("Properties").LocalElement("Description").Value : "",
+                        PublisherDisplayName = appxManifestXml.Root.LocalElement("Properties").LocalElement("PublisherDisplayName").Value,
 
-                    OSMinVersion = Version.Parse(appxManifestXml.Root.LocalElement("Prerequisites").LocalElement("OSMinVersion").Value),
-                    OSMaxVersionTested = Version.Parse(appxManifestXml.Root.LocalElement("Prerequisites").LocalElement("OSMaxVersionTested").Value)
-                };
+                        OSMinVersion = Version.Parse(appxManifestXml.Root.LocalElement("Prerequisites").LocalElement("OSMinVersion").Value),
+                        OSMaxVersionTested = Version.Parse(appxManifestXml.Root.LocalElement("Prerequisites").LocalElement("OSMaxVersionTested").Value)
+                    };
+                    appxManifestStr.Close();
 
-                appxManifestStr.Close();
+                    File.Delete(xmlPath);
 
-                File.Delete(xmlPath);
+                    // Import and Store details
+                    DirectoryInfo storeDir = Directory.CreateDirectory(Path.Combine(storePath, item.AppxId.ToString()));
+                    File.Move(appx.FullName, Path.Combine(storeDir.FullName, appx.Name));
 
-                // Import and Store details
-                DirectoryInfo storeDir = Directory.CreateDirectory(Path.Combine(storePath, item.AppxId.ToString()));
-                File.Move(appx.FullName, Path.Combine(storeDir.FullName, appx.Name));
+                    item.FullPath = Path.Combine(storeDir.FullName, appx.Name);
+                    FileStream fStr = new FileStream(Path.Combine(storeDir.FullName, "data.bin"), FileMode.CreateNew);
 
-                item.FullPath = Path.Combine(storeDir.FullName, appx.Name);
-                FileStream fStr = new FileStream(Path.Combine(storeDir.FullName, "data.bin"), FileMode.CreateNew);
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(fStr, item);
 
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(fStr, item);
+                    fStr.Flush();
+                    fStr.Close();
+                }
+                catch (Exception e)
+                {
+                    appxManifestStr.Close();
 
-                fStr.Flush();
-                fStr.Close();
+                    File.Delete(xmlPath);
+                    continue;
+                }
+
             }
 
             foreach (DirectoryInfo storedAppx in new DirectoryInfo(storePath).GetDirectories())
