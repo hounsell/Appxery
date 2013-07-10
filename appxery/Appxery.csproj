@@ -39,6 +39,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -112,6 +115,7 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Global.asax" />
     <Content Include="r\s\a.css" />
     <Content Include="Web.config" />
@@ -126,6 +130,7 @@
   <ItemGroup>
     <Folder Include="App_Data\AppX-Import\" />
     <Folder Include="App_Data\AppX-Store\" />
+    <Folder Include="App_Data\ElmahLogs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

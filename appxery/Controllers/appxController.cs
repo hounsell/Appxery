@@ -1,6 +1,7 @@
 ﻿using Appxery.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -33,7 +34,8 @@ namespace Appxery.Controllers
             AppX app = AppXServer.AppXList.Single(s => s.AppxId == id);
             Response.ContentType = "application/vnd.ms-appx";
             Response.AddHeader("Content-Disposition", string.Format("attachment; filename=\"{0}.appx\"", app.Name));
-            Response.WriteFile(app.FullPath);
+            string storePath = Server.MapPath("~/App_Data/AppX-Store");
+            Response.WriteFile(Path.Combine(storePath, app.Path));
             Response.Flush();
             return new EmptyResult();
         }

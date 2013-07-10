@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Elmah;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Xml.Linq;
 
@@ -15,7 +18,8 @@ namespace Appxery.Models
         public Guid AppxId { get; set; }
 
         public long Size { get; set; }
-        public string FullPath { get; set; }
+        public string Path { get; set; }
+        public string Sha256Hash { get; set; }
 
         public string Name { get; set; }
         public Version Version { get; set; }
@@ -72,6 +76,19 @@ namespace Appxery.Models
                 FileStream appxManifestStr = new FileStream(xmlPath, FileMode.Open);
                 XDocument appxManifestXml = XDocument.Load(appxManifestStr);
 
+                SHA256 hash = SHA256.Create();
+                FileStream appxStr = appx.OpenRead();
+                byte[] hashBytes = hash.ComputeHash(appxStr);
+                appxStr.Close();
+                appxStr.Dispose();
+
+                StringBuilder hashString = new StringBuilder();
+
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    hashString.Append(hashBytes[i].ToString("X2"));
+                }
+
                 try
                 {
                     AppX item = new AppX()
@@ -79,11 +96,12 @@ namespace Appxery.Models
                         AppxId = Guid.NewGuid(),
 
                         Size = appx.Length,
+                        Sha256Hash = hashString.ToString(),
 
                         Name = appxManifestXml.Root.LocalElement("Identity").Attribute("Name").Value,
                         Version = Version.Parse(appxManifestXml.Root.LocalElement("Identity").Attribute("Version").Value),
                         Publisher = appxManifestXml.Root.LocalElement("Identity").Attribute("Publisher").Value,
-                        ProcessorArchitecture = (Architecture)Enum.Parse(typeof(Architecture), appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture") == null ? "neutral" : appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture").Value ),
+                        ProcessorArchitecture = (Architecture)Enum.Parse(typeof(Architecture), appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture") == null ? "neutral" : appxManifestXml.Root.LocalElement("Identity").Attribute("ProcessorArchitecture").Value),
 
                         DisplayName = appxManifestXml.Root.LocalElement("Properties").LocalElement("DisplayName").Value,
                         Description = appxManifestXml.Root.LocalElement("Properties").LocalElement("Description") != null ? appxManifestXml.Root.LocalElement("Properties").LocalElement("Description").Value : "",
@@ -100,7 +118,7 @@ namespace Appxery.Models
                     DirectoryInfo storeDir = Directory.CreateDirectory(Path.Combine(storePath, item.AppxId.ToString()));
                     File.Move(appx.FullName, Path.Combine(storeDir.FullName, appx.Name));
 
-                    item.FullPath = Path.Combine(storeDir.FullName, appx.Name);
+                    item.Path = Path.Combine(storeDir.FullName, appx.Name).Substring(storePath.Length + 1);
                     FileStream fStr = new FileStream(Path.Combine(storeDir.FullName, "data.bin"), FileMode.CreateNew);
 
                     BinaryFormatter bf = new BinaryFormatter();
@@ -111,6 +129,10 @@ namespace Appxery.Models
                 }
                 catch (Exception e)
                 {
+                    Error elmahErr = new Error(e, HttpContext.Current);
+                    elmahErr.ServerVariables.Add("AppX Path", appx.FullName);
+                    ErrorLog.GetDefault(HttpContext.Current).Log(elmahErr);
+
                     appxManifestStr.Close();
 
                     File.Delete(xmlPath);
@@ -129,7 +151,18 @@ namespace Appxery.Models
 
                 if (item != null)
                 {
-                    AppXList.Add(item);
+                    if (AppXList.SingleOrDefault(a => a.Sha256Hash == item.Sha256Hash) != null)
+                    {
+                        Error elmahErr = new Error(new Exception("Duplicate AppX"));
+                        elmahErr.ServerVariables.Add("AppX Path 1", AppXList.SingleOrDefault(a => a.Sha256Hash == item.Sha256Hash).Path);
+                        elmahErr.ServerVariables.Add("AppX Path 2", item.Path);
+
+                        ErrorLog.GetDefault(HttpContext.Current).Log(elmahErr);
+                    }
+                    else
+                    {
+                        AppXList.Add(item);
+                    }
                 }
 
                 storeBinStr.Close();
