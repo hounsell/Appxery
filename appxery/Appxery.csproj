@@ -105,6 +105,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\appxController.cs" />
+    <Compile Include="Controllers\bundleController.cs" />
+    <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -115,7 +117,6 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Global.asax" />
     <Content Include="r\s\a.css" />
     <Content Include="Web.config" />
@@ -130,6 +131,7 @@
   <ItemGroup>
     <Folder Include="App_Data\AppX-Import\" />
     <Folder Include="App_Data\AppX-Store\" />
+    <Folder Include="App_Data\AppXBundle-Store\" />
     <Folder Include="App_Data\ElmahLogs\" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +152,13 @@
   <ItemGroup>
     <None Include="Properties\PublishProfiles\Appxery.pubxml" />
     <Content Include="Views\appx\details.cshtml" />
+    <Content Include="Views\bundle\details.cshtml" />
+    <Content Include="Views\bundle\Index.cshtml" />
+    <Content Include="Views\Shared\appxListing.cshtml" />
+    <Content Include="Views\Shared\bundleListing.cshtml" />
+    <Content Include="Views\home\Index.cshtml" />
+    <Content Include="Views\Shared\appxBundleListing.cshtml" />
+    <Content Include="Views\bundle\packageDetails.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

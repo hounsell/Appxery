@@ -1,4 +1,4 @@
-﻿@model Appxery.Models.AppX
+﻿@model Appxery.Models.AppXFromBundle
 
 @{
     ViewBag.Title = string.Format("{0} (v{1}, {2}) - Appxery", Model.Name, Model.Version.ToString(), Model.ProcessorArchitecture.ToString());
@@ -72,6 +72,6 @@
     </div>
 </fieldset>
 <p class="col-sm-9 col-offset-3">
-    <a href="@Url.Action("download", new { id = Model.AppxId })" class="btn btn-primary"><i class="icon-download-alt"></i> Download</a>
+    <a href="@Url.Action("packageDownload", new { controller = "bundle", id = ViewBag.BundleId, appxId = Model.AppxId })" class="btn btn-primary"><i class="icon-download-alt"></i> Download</a>
     <a href="@Url.Action("Index", new { controller = "home" })" class="btn btn-default"><i class="icon-align-justify"></i> Back to Listing</a>
 </p>

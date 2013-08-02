@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Appxery.Models.AppXBundle>
+<h3>Bundle Listing</h3>
+
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Version
+        </th>
+        <th>
+            Packages
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @item.Packages.First().Version.ToString() <!-- Version of first package -->
+            </td>
+            <td>
+                @item.Packages.Count() Packages
+            </td>
+            <td class="text-right">
+                <a href="@Url.Action("details", new { controller = "bundle", id = item.AppxBundleId })" class="btn btn-small btn-default"><i class="icon-th-list"></i> Details</a>
+                <a href="@Url.Action("download", new { controller = "bundle", id = item.AppxBundleId })" class="btn btn-small btn-default"><i class="icon-download-alt"></i> Download</a>
+            </td>
+        </tr>
+    }
+
+</table>

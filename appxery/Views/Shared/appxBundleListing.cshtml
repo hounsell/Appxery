@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Appxery.Models.AppXFromBundle>
+
+<table class="table">
+    <tr>
+        <th>Name
+        </th>
+        <th>Architecture
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.Raw(string.IsNullOrWhiteSpace(item.ResourceId) ? item.Name : item.ResourceId)
+            </td>
+            <td>
+                @item.ProcessorArchitecture.ToString()
+            </td>
+            <td class="text-right">
+                <a href="@Url.Action("packageDetails", new { controller = "bundle", id = ViewData["BundleId"], appxId = item.AppxId })" class="btn btn-small btn-default"><i class="icon-th-list"></i> Details</a>
+                <a href="@Url.Action("packageDownload", new { controller = "bundle", id = ViewData["BundleId"], appxId = item.AppxId })" class="btn btn-small btn-default"><i class="icon-download-alt"></i> Download</a>
+            </td>
+        </tr>
+    }
+
+</table>
