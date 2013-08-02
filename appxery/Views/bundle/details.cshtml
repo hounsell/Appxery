@@ -59,7 +59,7 @@
                         ViewDataDictionary vdd = new ViewDataDictionary();
                         vdd.Add("BundleId", Model.AppxBundleId);
                     }
-                    @Html.Partial("appxBundleListing", Model.Packages, vdd)
+                    @Html.Partial("appxBundleListing", Model.Packages.OrderBy(a => a.Name), vdd)
                 </div>
             </div>
         </div>

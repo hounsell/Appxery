@@ -14,8 +14,8 @@ namespace Appxery.Controllers
 
         public ActionResult Index()
         {
-            ViewBag.AppX = AppXServer.AppXList;
-            ViewBag.Bundle = AppXBundleServer.AppXBundleList;
+            ViewBag.AppX = AppXServer.AppXList.OrderBy(a => a.Name);
+            ViewBag.Bundle = AppXBundleServer.AppXBundleList.OrderBy(a => a.Name);
             return View(ViewBag);
         }
 
